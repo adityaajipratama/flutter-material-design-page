@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(TodoApp());
+  runApp(MyApp());
 }
 
-class TodoApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,21 +23,21 @@ class TodoListScreen extends StatefulWidget {
 }
 
 class _TodoListScreenState extends State<TodoListScreen> {
-  final List<String> _todoList = [];
+  final List<String> _tasks = [];
   final TextEditingController _controller = TextEditingController();
 
-  void _addTodoItem(String task) {
-    if (task.isNotEmpty) {
+  void _addTask() {
+    if (_controller.text.isNotEmpty) {
       setState(() {
-        _todoList.add(task);
+        _tasks.add(_controller.text);
+        _controller.clear();
       });
-      _controller.clear();
     }
   }
 
-  void _removeTodoItem(int index) {
+  void _removeTask(int index) {
     setState(() {
-      _todoList.removeAt(index);
+      _tasks.removeAt(index);
     });
   }
 
@@ -49,38 +49,59 @@ class _TodoListScreenState extends State<TodoListScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Enter a task',
-                border: OutlineInputBorder(),
-              ),
-              onSubmitted: _addTodoItem,
-            ),
-          ),
           Expanded(
             child: ListView.builder(
-              itemCount: _todoList.length,
+              itemCount: _tasks.length,
               itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(_todoList[index]),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _removeTodoItem(index),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                  child: Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        _tasks[index],
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _removeTask(index),
+                      ),
                     ),
                   ),
                 );
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Add a new task',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: _addTask,
+                  child: Text('Add'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15.0),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _addTodoItem(_controller.text),
-        child: Icon(Icons.add),
       ),
     );
   }
